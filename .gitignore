@@ -1,0 +1,14 @@
+# OMC session state
+.omc/
+**/.omc/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Harness runtime
+harness/runs/
+harness/.last-prompt.json

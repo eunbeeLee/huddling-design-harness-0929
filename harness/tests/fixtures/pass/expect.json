@@ -1,0 +1,18 @@
+[
+  {
+    "gate": "G1",
+    "rules": []
+  },
+  {
+    "gate": "G2_precheck",
+    "rules": []
+  },
+  {
+    "gate": "G2",
+    "rules": []
+  },
+  {
+    "gate": "G3",
+    "rules": []
+  }
+]

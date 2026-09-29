@@ -1,0 +1,23 @@
+{
+  "rule_scope": [
+    "A",
+    "B"
+  ],
+  "screens": [
+    {
+      "id": "SC1",
+      "name": "내 자산",
+      "kind": "asset-list",
+      "points": [
+        "P1",
+        "P2"
+      ],
+      "components": [
+        "segmented-control",
+        "pricing-card",
+        "button-primary"
+      ],
+      "visibility_default": "private"
+    }
+  ]
+}

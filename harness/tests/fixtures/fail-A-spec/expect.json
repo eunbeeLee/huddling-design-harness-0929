@@ -1,0 +1,8 @@
+[
+  {
+    "gate": "G3",
+    "rules": [
+      "A.visibility_default"
+    ]
+  }
+]

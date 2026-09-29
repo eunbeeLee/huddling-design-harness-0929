@@ -1,0 +1,8 @@
+[
+  {
+    "gate": "G3",
+    "rules": [
+      "B.review_required"
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "prd_section": "6-5",
+  "points": [
+    {
+      "id": "P1",
+      "title": "상태 칩으로 자산 상태 표시",
+      "why": "...",
+      "refs": [
+        "refs/a.png"
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "공개 범위 세그먼트",
+      "why": "...",
+      "refs": [
+        "refs/b.png"
+      ]
+    }
+  ]
+}

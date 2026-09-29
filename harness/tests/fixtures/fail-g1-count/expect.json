@@ -1,0 +1,8 @@
+[
+  {
+    "gate": "G1",
+    "rules": [
+      "g1.points.count"
+    ]
+  }
+]

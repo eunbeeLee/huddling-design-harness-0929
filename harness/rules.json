@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "sources": {
+    "design": "docs/design.md",
+    "service": "docs/story-service.md"
+  },
+  "sync": {
+    "id": "sync.design-hex",
+    "check": "design.md에서 추출한 hex가 모두 color.allowed에 있어야 한다",
+    "max_missing": 0
+  },
+  "gates": {
+    "G1": {
+      "target": "01-analysis.json",
+      "rules": [
+        { "id": "g1.points.count", "check": "len(points)", "min": 3, "max": 7 },
+        { "id": "g1.points.refs", "check": "모든 point.refs 길이 >= 1 이고 파일이 refs/에 존재", "max_violations": 0 },
+        { "id": "g1.prd_section", "check": "prd_section == 00-input.json.prd_section", "max_violations": 0 }
+      ]
+    },
+    "G2_precheck": {
+      "target": "03-keyscreen-snapshot.json",
+      "rules": [
+        { "id": "g2.frames.count", "check": "len(frames)", "min": 2, "max": 3 },
+        { "id": "g2.frames.match_spec", "check": "len(frames) == len(02-spec.json.screens)", "max_violations": 0 },
+        { "id": "frame.size", "ref": "design.frame.size" },
+        { "id": "effects.shadow.count", "ref": "design.effects.shadow.count" }
+      ]
+    },
+    "G2": {
+      "target": "approval.json",
+      "rules": [
+        { "id": "g2.decision", "check": "decision in allowed", "allowed": ["승인", "반려"] },
+        { "id": "g2.reason", "check": "decision == 반려 이면 reason in allowed", "allowed": ["레이아웃/톤", "기능누락"] },
+        { "id": "g2.writer", "check": "approval.json은 사람만 작성 (hook이 에이전트 쓰기 차단)" }
+      ],
+      "pass": "decision == 승인",
+      "on_fail": { "레이아웃/톤": "S3", "기능누락": "S2" }
+    },
+    "G3": {
+      "target": ["04-build-snapshot.json", "02-spec.json"],
+      "rules": ["design.*", "service.*"],
+      "pass": "violations.count == 0",
+      "on_fail": "S4"
+    }
+  },
+  "design": {
+    "color.allowed": {
+      "source": "design.md#Colors",
+      "check": "모든 fill/stroke/text 색이 allowed 안에 있음",
+      "allowed": ["#141414", "#0066ff", "#ffffff", "#f3f3f3", "#f0f0f0", "#e0e0e0", "#262626", "#707070", "#adadad", "rgba(115,115,115,0.56)"],
+      "exempt_node_types": ["IMAGE"]
+    },
+    "color.f0f0f0.role": {
+      "source": "design.md#Surface (Shared hex rule)",
+      "check": "#f0f0f0 fill은 입력창 노드에만, #f0f0f0 1px stroke는 카드 노드에만",
+      "fill_allowed_components": ["text-input", "text-input-focused"],
+      "stroke_allowed_components": ["pricing-card", "testimonial-card"]
+    },
+    "color.accent.not_cta": {
+      "source": "design.md#Don't",
+      "check": "#0066ff가 button-* 노드의 fill로 쓰이면 위반",
+      "max_violations": 0
+    },
+    "accent.per_frame": {
+      "source": "design.md#Do",
+      "check": "프레임당 #0066ff 사용 노드 수",
+      "max": 2
+    },
+    "radius.allowed": {
+      "source": "design.md#Shapes",
+      "allowed": [0, 16, 24, 9999],
+      "exceptions": [{ "component": "app-icon-squircle", "radius_ratio": 0.3 }]
+    },
+    "font.family": {
+      "source": "design.md#Typography",
+      "allowed": ["Pretendard", "Pretendard Variable"]
+    },
+    "font.weight": {
+      "source": "design.md#Typography",
+      "allowed": [300, 400, 600, 700]
+    },
+    "font.letterSpacing": {
+      "source": "design.md#Typography (Principles)",
+      "allowed": [0]
+    },
+    "effects.shadow.count": {
+      "source": "design.md#Elevation & Depth",
+      "check": "DROP_SHADOW / INNER_SHADOW effect 개수",
+      "max": 0
+    },
+    "frame.size": {
+      "source": "design.md#Screen Size",
+      "check": "최상위 화면 프레임 크기",
+      "width": 390,
+      "height": 844
+    },
+    "keyscreen.locked": {
+      "source": "harness/roles.md#Keyscreen 잠금",
+      "gate": "G3",
+      "check": "04-build-snapshot.json.keyscreen_hashes가 03-keyscreen-snapshot.json의 노드 hash와 모두 일치",
+      "max_violations": 0
+    }
+  },
+  "service": {
+    "A.visibility_default": {
+      "source": "story-service.md#A",
+      "applies_if": "02-spec.json.rule_scope contains \"A\"",
+      "spec_check": "visibility_default 필드가 있는 모든 화면에서 값 == \"private\"",
+      "snapshot_check": "visibility_default가 있는 화면의 프레임(screen_id 일치)에 group == \"visibility\"인 segmented-control-active 노드가 1개 이상 있고, 그 text가 모두 \"비공개\"",
+      "max_violations": 0
+    },
+    "B.review_required": {
+      "source": "story-service.md#B",
+      "applies_if": "02-spec.json.rule_scope contains \"B\"",
+      "spec_check": "kind가 sale_kinds인 화면이 1개 이상 있고, 그 화면들의 states가 required_states를 모두 포함",
+      "sale_kinds": ["sale-request", "sale-review"],
+      "required_states": ["검수중", "승인", "수정요청", "반려"],
+      "snapshot_check": "kind == sale-request 화면의 프레임에 required_checklist 텍스트가 모두 존재",
+      "required_checklist": ["개인정보", "고객정보", "회사기밀", "타인 저작물"],
+      "max_violations": 0
+    },
+    "scope.declared": {
+      "source": "story-service.md",
+      "check": "02-spec.json에 rule_scope 배열이 존재 (빈 배열 허용 = 해당 없음 명시)",
+      "max_violations": 0
+    }
+  },
+  "retry": { "max_attempts_per_gate": 3, "on_exceed": "stop_and_handoff_to_human" }
+}

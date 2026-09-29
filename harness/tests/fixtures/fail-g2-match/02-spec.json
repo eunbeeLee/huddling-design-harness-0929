@@ -1,0 +1,46 @@
+{
+  "rule_scope": [
+    "A",
+    "B"
+  ],
+  "screens": [
+    {
+      "id": "SC1",
+      "name": "내 자산",
+      "kind": "asset-list",
+      "points": [
+        "P1",
+        "P2"
+      ],
+      "components": [
+        "segmented-control",
+        "pricing-card",
+        "button-primary"
+      ],
+      "visibility_default": "private"
+    },
+    {
+      "id": "SC2",
+      "name": "판매 신청",
+      "kind": "sale-request",
+      "points": [
+        "P3"
+      ],
+      "components": [
+        "text-input",
+        "button-outline"
+      ],
+      "states": [
+        "검수중",
+        "승인",
+        "수정요청",
+        "반려"
+      ]
+    },
+    {
+      "id": "SC3",
+      "name": "검수 결과",
+      "kind": "sale-status"
+    }
+  ]
+}

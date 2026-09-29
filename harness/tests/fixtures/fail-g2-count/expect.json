@@ -1,0 +1,8 @@
+[
+  {
+    "gate": "G2_precheck",
+    "rules": [
+      "g2.frames.count"
+    ]
+  }
+]
